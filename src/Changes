@@ -1,0 +1,120 @@
+
+Amiga Smart File System, Linux implementation
+
+Please direct bug reports to: marek@amiga.pl
+
+History:
+
+v1.0beta12 (03.12.2006)
+- adapted to 2.6.19 kernel VFS changes
+- fixed symlink write crash
+
+v1.0beta11 (22.09.2006)
+- adapted to 2.6.18 kernel VFS changes
+- made some functions static to reduce overhead in kernel namespace
+
+v1.0beta10 (13.06.2005)
+- fixed ugly bug introduced in beta9 that caused kernel crash on x86
+  (thanks to Emiliano for reporting it!)
+
+v1.0beta9 (17.03.2005)
+- added NLS support (thanks to Pavel Fedin!)
+
+v1.0beta8 (07.01.2005)
+- adapted to 2.6.10 kernel VFS changes
+- added workaround for buggy Mandrake kernel headers
+
+v1.0beta7 (25.06.2004)
+- small changes in documentation
+- code clean up: bitfuncs.c, super.c, inode.c, *.h, Makefile, added 
+  asfs_ prefix to function names, made some functions static
+  (big thanks to Christoph Hellwig for advice!)
+- fixed minor bugs (inode leak in super.c, not-realesed buffer during 
+  object renaming in inode.c)
+- now files/dirs are created with global ownership/permission bits
+
+v1.0beta6 (04.06.2004)
+- fixed: ASFS_SB(sb)->flags was always zero in 2.6.x code
+
+v1.0beta5 (07.05.2004)
+- finally fixed a problem with file size attrib. not being written
+  to disk
+- fixed some problems with GCC 3.x and debug enabled
+
+v1.0beta4 (12.04.2004)
+- removed dummy asfs_notify_change (this fixes major bug introduced
+  in 1.0beta3 - file size wasn't written to disk) until it will 
+  be implemented completely
+
+v1.0beta3 (22.03.2004) - still beta
+- updated for 2.6.x kernels VFS changes
+- code clean-up 
+- added dummy asfs_notify_change (chmod now returns no errors)
+- added symlinks write support
+- fixed: ASFS_SB(sb)->flags was always zero
+
+v1.0beta2 (11.01.2004) - special version for Pegasos][ kernel
+- separated read and write functions, can be compiled also
+  as read-only fs
+
+v1.0beta1 (02.12.2003) - first public beta with write support
+- added dentry hashing/comparing routines
+- code clean-up
+
+v1.0aplha4 (30.11.2003) - preparing for first public beta
+- fixed some problems with renaming/moving files
+- fixed two major bugs, which didn't occur when fs was mounted
+  on loopback device (newly allocated blocks were not written to
+  disk and state bits were not set correctly on newly mapped file
+  blocks)
+- fixed many small bugs in io code (some buffers were not freed)
+- added/modified sb locks in asfs_lookup and asfs_getblock
+- fixed serious bug in file block allocation routines
+
+v1.0aplha3 (23.11.2003)
+- added (hopefully) all byteswap code, should now work again on 
+  little-endian systems (also with write support!)
+- updated documentation
+
+v1.0alpha2 (13.11.2003) 
+- now alocates file blocks in chunks during one request
+- fixed some dead-locks, other fixes
+
+v1.0alpha (02.11.2003) - first working version with full write support
+- too much to list it here ;)
+
+... (working on write support)
+
+v0.7 (12.10.2003) - internal realase
+- added asfs_breadcheck, modified asfs_get_node, asfs_search_BTree, 
+  no more from_be32/16 macros, other...
+- code splitted into several files
+
+v0.6 (04.09.2003) - final read-only version
+- added support for HashTables, directory scaning should be
+  MUCH faster now
+- added checking of block IDs before reading any data from block
+
+v0.5 (19.07.2003)
+- added simple but effective extent cache - real speed-up 
+  in reading large files
+- added read support for symlinks - based on AFFS symlinks
+
+v0.4 (10.07.2003)
+- third code clean-up (thanks to Roman Zippel for advice)
+- now uses generic readpage and readinode routines
+
+v0.3beta (17.06.2003)
+- second code clean-up
+
+v0.2beta2 (15.06.2003)
+- fixed yet another stupid bug - driver can't read root block on little-endian systems
+v0.2beta (15.06.2003)
+- fixed stupid bug - now files have 'file' flag (S_IFREG) set...
+- added mount options to set uid, gid and mode of files and dirs
+- made hidden files & dirs really hidden (= not listed in directories)
+- code clean-up
+
+v0.1beta (11.06.2003) 
+- after many kernel crashes, finally got it! 
+- first working read-only filesystem driver

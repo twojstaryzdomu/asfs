@@ -1,0 +1,161 @@
+
+Amiga SmartFileSystem, Linux implementation
+===========================================
+
+ASFS is a Amiga Smart FileSystem driver for Linux. It supports reading
+files and directories. From version 1.0 there is also an experimental 
+(almost full) write support. Experimental means that it hasn't been 
+tested enough yet, so use it with care. Symbolic links (in AmigaOS
+called soft links) are also supported read/write. Read notes below 
+about symlinks support.
+
+
+Unsupported features of Amiga SFS
+================================
+
+ASFS currently does not support safe-delete feature of Amiga SFS 
+filesystem. It simply deletes files instead of moving them to 
+".recycled" directory. It also doesn't remove files from ".recycled" 
+directory, when there is no space left on drive. 
+
+If there is no space left, you need to manually remove files from 
+".recycled" directory. Also if you want to delete a file in a safe 
+way, you need to move it to ".recycled" directory by hand.
+
+Because of all of above, the amount of free space on disk does not 
+include space used by all files from ".recycled" directory.
+
+
+Limitations
+===========
+
+There is no Amiga protection bits into Linux permission bits tranlation
+and vice versa. If you need this feature, mail me.
+
+ASFS will always keep some amount of blocks free. This means that you 
+cannot fill the drive completely. It is because Amiga SFS uses some 
+special methods of writing data (called safe write), which needs some
+additional free space.
+
+File systems with unfinished transactions (this happens when system crashed
+during writing data to disk on AmigaOS/MorphOS) will be mounted read-only
+to protect data. The only way to fix such filesystem is to mount it under
+AmigaOS or MorphOS.
+
+Do not try to mount and write to filesystem with errors. Bad things will
+happen.
+
+
+Mount options for the ASFS
+==========================
+
+setuid=uid	
+		This sets the owner of all files and directories in the file
+		system to uid.
+
+setgid=gid	
+		Same as above, but for gid.
+
+mode=mode	
+		Sets the mode flags to the given (octal) value. Directories 
+		will get an x permission if the corresponding r bit is set.
+		The default mode is 0644, which means that everybody are allowed 
+		to read files, but only root can write to them.
+		(for directories this means also that search bits are set).
+
+prefix=path	
+		Path will be prefixed to every absolute path name of symbolic 
+		links on an ASFS/AFFS partition. Default = "/". (See below.)
+
+volume=name
+		When symbolic links with an absolute path are created
+		on an ASFS/AFFS partition, name will be prepended as the
+		volume name. Default = "" (empty string). (See below.)
+
+lowercasevol
+		Translate all volume names in symlinks to lower case.
+		Disabled by default. (See below.)
+
+iocharset=name
+		Character set to use for converting file names. Specifies 
+		character set used by your Linux system. 
+codepage=name
+		Set the codepage number for converting file names. Specifies
+		character set used by your Amiga. Use full name (for example
+		'cp1251' instead of '1251') here, this allows to specify any
+		character set, not only numbered one (like 'iso8859-2').
+		Use special name 'none' to disable the NLS file name 
+		translation.
+
+Symbolic links
+==============
+
+Although the Amiga and Linux file systems resemble each other, there
+are some, not always subtle, differences. One of them becomes apparent
+with symbolic links. While Linux has a file system with exactly one
+root directory, the Amiga has a separate root directory for each
+file system (for example, partition, floppy disk, ...). With the Amiga,
+these entities are called "volumes". They have symbolic names which
+can be used to access them. Thus, symbolic links can point to a
+different volume. ASFS turns the volume name into a directory name
+and prepends the prefix path (see prefix option) to it. When option
+"lowercasevol" is set, it also translates volume names to lower case.
+If the volume name is the same as a name given in "volume" option,
+it will be ignored and an absolute path will be created.
+
+Example:
+You mount all your Amiga partitions under /amiga/<volume> (where
+<volume> is the name of the volume), and you give options
+`prefix="/amiga/",volume="Linux",lowercasevol' when mounting all your 
+ASFS partitions. (They might be "User", "WB" and "Graphics", the mount 
+points /amiga/user, /amiga/wb and /amiga/graphics). 
+
+A symbolic link referring to "USER:sc/include/dos/dos.h" will be 
+translated to "/amiga/user/sc/include/dos/dos.h".
+A symbolic link referring to "Linux:etc/fstab" will be translated to
+"/etc/fstab".
+If you create a symlink referring to "/amiga/graphics/data/pict.jpg",
+it will be saved as "graphics:data/pict.jpg".
+If you create a symlink referring to "/boot/System.map", it will be 
+saved as "Linux:boot/System.map".
+
+
+Other information
+=================
+
+Supported block sizes are: 512, 1024, 2048 and 4096 bytes. Larger blocks
+speed up almost everything at the expense of wasted disk space. The speed
+gain above 4K seems not really worth the price, so you don't lose too
+much here, either.
+
+This file system has been tested on Motorola PPC and 68k, as well as 
+Intel x86 systems. I don't know, if it works on other Linux systems.
+
+This filesystem is in BETA STAGE. This means that driver MIGHT corrupt
+or damage data on your disk. Remember! YOU USE IT ON YOUR OWN RISK! 
+
+I made almost all I could to minimalize this risk. On my systems several 
+gigabytes has been succesfully copied from and to SFS disks. I would also 
+appreciate any infomation if this filesystem works on your system or not. 
+See next paragraph for my email.
+
+Some parts of this documentation has been adapted from AFFS driver docs.
+
+
+Author, contact and copyright infos
+===================================
+
+ASFS has been written by Marek 'March' Szyprowski <marek@amiga.pl>.
+Mail me if you have any suggestions or found a bug.
+
+Copyright (C) 2003,2004,2005  Marek 'March' Szyprowski <marek@amiga.pl>
+
+Thanks to Marcin Kurek (Morgoth/Dreamolers-CAPS) for help and parts 
+of original amiga version of SmartFilesystem source code. 
+
+SmartFilesystem is copyrighted (C) 2003,2004 by: John Hendrikx, 
+Ralph Schmidt, Emmanuel Lesueur, David Gerber and Marcin Kurek
+
+The ASFS driver is realased under the terms of of the GNU General 
+Public License. See source code for more details.
+
