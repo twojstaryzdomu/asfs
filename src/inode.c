@@ -59,7 +59,7 @@ static struct file_operations asfs_file_operations = {
 	.aio_write	= generic_file_aio_write,
 	.open		= asfs_file_open,
 	.release	= asfs_file_release,
-	.fsync		= file_fsync,
+	.fsync		= generic_file_fsync,
 #endif
 };
 
